@@ -29,9 +29,10 @@ Rex identifies callers only by how they connect. Pick one:
 
 1. **Tailscale (recommended).** Put a one-time Tailscale auth key in the
    *Tailscale auth key* option. The server joins your tailnet as the device
-   `rex.<tailnet>.ts.net`. In Rex for Mac choose **Add Remote Host…** and
-   enter `https://rex.<tailnet>.ts.net`, or from a CLI:
-   `rex -S https://rex.<tailnet>.ts.net ls`
+   named by *Tailscale hostname* (default `ha-rex`), i.e.
+   `ha-rex.<tailnet>.ts.net`. In Rex for Mac choose **Add Remote Host…** and
+   enter `https://ha-rex.<tailnet>.ts.net`, or from a CLI:
+   `rex -S https://ha-rex.<tailnet>.ts.net ls`
    The tailnet must have MagicDNS and HTTPS certificates on. The server
    keeps its login in `/data/rex`, so the key is needed only once.
 2. **Plain HTTP on the LAN/VPN.** Set *Extra listen address* to `:7297`,
@@ -58,6 +59,7 @@ Rex identifies callers only by how they connect. Pick one:
 | --- | --- | --- |
 | `channel` | `preview` | Rex release channel to install: `stable`, `preview`, `snapshot`. Applied on restart. If the channel is not published yet (e.g. `stable` before the first stable release), the app stops with a clear log message. |
 | `tailscale_auth_key` | empty | One-time Tailscale auth key for the built-in Tailscale listener. |
+| `tailscale_hostname` | `ha-rex` | Device name on the tailnet; reachable as `https://<hostname>.<tailnet>.ts.net`. Empty falls back to `ha-rex`. |
 | `extra_listen` | empty (optional) | Extra address the server also listens on for remote clients, e.g. `:7297`. Requires `allow_anonymous` and enabling port 7297 in the Network section. Anyone who can reach it gets full access. |
 | `allow_anonymous` | `false` | Allows the extra listener to accept unidentified callers. Dangerous on an open network. |
 | `max_sessions` | `10` | Max concurrent sessions; 0 = unlimited. |

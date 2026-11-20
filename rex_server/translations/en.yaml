@@ -4,7 +4,10 @@ configuration:
     description: Which Rex release channel to install (stable, preview, or snapshot). Applied when the app restarts.
   tailscale_auth_key:
     name: Tailscale auth key
-    description: One-time Tailscale auth key, used once to sign the server into your tailnet as the device "rex". Leave empty to disable the Tailscale listener.
+    description: One-time Tailscale auth key, used once to sign the server into your tailnet. Leave empty to disable the Tailscale listener.
+  tailscale_hostname:
+    name: Tailscale hostname
+    description: The device name this server gets on your tailnet when the Tailscale listener is on. The default "ha-rex" makes it reachable as https://ha-rex.<tailnet>.ts.net. Leave empty to use the default.
   extra_listen:
     name: Extra network listener (advanced, optional)
     description: An extra address the Rex server also listens on for remote clients, for example ":7297" (every interface, port 7297). Leave empty to keep the server on its local socket and the Tailscale listener only. If you set this, you must also enable "Allow anonymous access" below and turn on port 7297 in the Network section - and anyone who can reach that port gets full access to the server.

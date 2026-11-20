@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3
+
+- New `tailscale_hostname` option (default `ha-rex`): the Tailscale device
+  name is now passed via `--tailscale-hostname`, so the host is
+  `https://ha-rex.<tailnet>.ts.net` instead of `rex.<tailnet>.ts.net`,
+  and configurable
+
 ## 0.1.2
 
 - Fix container start: move `user-bundles.d` from `s6-rc.d/` to

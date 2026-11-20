@@ -1,5 +1,5 @@
 name: "Rex Server"
-version: "0.1.2"
+version: "0.1.3"
 slug: "rex_server"
 description: "Runs a Rex terminal server (superlogical.com/rex) as a Home Assistant app, so Rex clients can open terminals on it"
 url: "https://github.com/aranw/ha-rex-server"
@@ -17,6 +17,7 @@ image: "ghcr.io/aranw/ha-rex-server"
 options:
   channel: "preview"
   tailscale_auth_key: ""
+  tailscale_hostname: "ha-rex"
   extra_listen: ""
   allow_anonymous: false
   max_sessions: 10
@@ -26,6 +27,7 @@ schema:
   # a type ending in ? (str?, password?) makes the option optional in the UI
   channel: list(stable|preview|snapshot)
   tailscale_auth_key: password?
+  tailscale_hostname: str?
   extra_listen: str?
   allow_anonymous: bool
   max_sessions: int
