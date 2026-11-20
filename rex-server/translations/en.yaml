@@ -1,0 +1,20 @@
+configuration:
+  channel:
+    name: Release channel
+    description: Which Rex release channel to install (stable, preview, or snapshot). Applied when the app restarts.
+  tailscale_auth_key:
+    name: Tailscale auth key
+    description: One-time Tailscale auth key, used once to sign the server into your tailnet as the device "rex". Leave empty to disable the Tailscale listener.
+  extra_listen:
+    name: Extra listen address
+    description: Additional network listener for the Rex server, for example ":7297". Leave empty to listen on the local Unix socket only. Requires "Allow anonymous access" and an enabled port below.
+  allow_anonymous:
+    name: Allow anonymous access
+    description: Lets the extra listener accept connections without identifying the caller. Anyone who can reach it gets full access to the server. Only enable this on a network you fully control.
+  max_sessions:
+    name: Maximum sessions
+    description: Maximum number of concurrent Rex sessions on this server. 0 means no limit.
+network:
+  "7297/tcp":
+    name: Rex plain HTTP listener
+    description: Only needed when extra_listen uses this port (for example ":7297"). Disabled by default.

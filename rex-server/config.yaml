@@ -1,0 +1,34 @@
+name: "Rex Server"
+version: "0.1.0"
+slug: "rex_server"
+description: "Runs a Rex terminal server (superlogical.com/rex) as a Home Assistant app, so Rex clients can open terminals on it"
+url: "https://github.com/aranw/ha-rex-server"
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+stage: experimental
+# Single multi-arch image (manifest list for amd64 + arm64). The Supervisor
+# resolves the host architecture from the manifest, so no {arch} placeholder.
+image: "ghcr.io/aranw/ha-rex-server"
+
+options:
+  channel: "preview"
+  tailscale_auth_key: ""
+  extra_listen: ""
+  allow_anonymous: false
+  max_sessions: 0
+
+schema:
+  channel: list(stable, preview, snapshot)
+  tailscale_auth_key: password
+  extra_listen: str
+  allow_anonymous: bool
+  max_sessions: int
+
+# Off by default. Enable in the app's Network settings only if you use
+# extra_listen with this port (e.g. ":7297").
+ports:
+  "7297/tcp": null

@@ -1,0 +1,9 @@
+#!/command/with-contenv bashio
+# Runs every time the rex server exits. $1 is the exit code, or 256 when a
+# signal killed it. A crash stops the whole app so the Supervisor can act.
+
+if [[ "${1}" -ne 0 ]] && [[ "${1}" -ne 256 ]]; then
+  bashio::log.warning "rex-server exited with code ${1}; stopping the app"
+  echo "${1}" > /run/s6-linux-init-container-results/exitcode
+  exec /run/s6/basedir/bin/halt
+fi

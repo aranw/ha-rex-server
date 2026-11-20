@@ -1,0 +1,29 @@
+#!/command/with-contenv bashio
+# Installs (or upgrades) the rex binary from the release channel chosen in
+# the app's configuration. Runs once at every app start, before rex-server.
+
+channel=$(bashio::config 'channel')
+arch=$(uname -m)
+
+bashio::log.info "Installing Rex from channel '${channel}' (${arch})"
+
+# Fail early with a clear message when the channel has not been published
+# yet (for example 'stable' before the first stable release exists).
+index_url="https://pkgs.superlogical.com/rex/apk/${channel}/${arch}/APKINDEX.tar.gz"
+if ! curl -fsSI "${index_url}" > /dev/null; then
+  bashio::log.error "Rex channel '${channel}' is not published for ${arch}. Pick a different channel in the app configuration."
+  exit 1
+fi
+
+# Point apk at the selected channel's repository. apk appends the
+# architecture and APKINDEX.tar.gz itself.
+mkdir -p /etc/apk/repositories.d
+echo "https://pkgs.superlogical.com/rex/apk/${channel}" > /etc/apk/repositories.d/rex.list
+apk update
+
+# Remove first, then add: `apk add -u` alone will not downgrade, and
+# switching channels can mean a lower version (e.g. snapshot -> preview).
+apk del rex > /dev/null 2>&1 || true
+apk add rex
+
+rex version

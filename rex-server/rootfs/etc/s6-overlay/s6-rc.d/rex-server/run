@@ -1,0 +1,46 @@
+#!/command/with-contenv bashio
+# Starts the Rex server in the foreground; s6-overlay supervises it and
+# restarts it if it exits cleanly.
+
+mkdir -p /run/rex /data/rex
+
+args=(
+  server run
+  --listen unix:///run/rex/server.sock
+  --state-dir /data/rex
+  --socket-mode 0660
+  --log-format text
+)
+
+# Optional Tailscale listener: the server joins your tailnet as its own
+# device ("rex.<tailnet>.ts.net"), so no port needs to be open on the LAN
+# and callers are identified by Tailscale.
+tailscale_auth_key=$(bashio::config 'tailscale_auth_key')
+if [[ -n "${tailscale_auth_key}" ]]; then
+  printf '%s' "${tailscale_auth_key}" > /data/rex/tailscale.key
+  chmod 600 /data/rex/tailscale.key
+  args+=(--tailscale --tailscale-auth-key-file /data/rex/tailscale.key)
+  bashio::log.info "Tailscale listener enabled"
+fi
+
+# Optional plain-HTTP listener for clients on the LAN or a VPN. Rex refuses
+# a plain listener without --allow-anonymous, and anyone who can reach it
+# gets full access to the server, so both options must be set deliberately.
+extra_listen=$(bashio::config 'extra_listen')
+if [[ -n "${extra_listen}" ]]; then
+  if bashio::config.true 'allow_anonymous'; then
+    args+=(--extra-listen "${extra_listen}" --allow-anonymous)
+    bashio::log.warning "Plain listener '${extra_listen}' enabled: anyone who can reach it has full access to this server"
+  else
+    bashio::log.error "extra_listen is set but allow_anonymous is off. A plain listener refuses to start without it: either enable allow_anonymous or clear extra_listen."
+    exit 1
+  fi
+fi
+
+max_sessions=$(bashio::config 'max_sessions')
+if [[ "${max_sessions}" -gt 0 ]]; then
+  args+=(--max-sessions "${max_sessions}")
+fi
+
+bashio::log.info "Starting: rex ${args[*]}"
+exec rex "${args[@]}"

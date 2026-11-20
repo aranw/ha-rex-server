@@ -1,0 +1,3 @@
+# App scripts must keep LF line endings: CRLF makes s6-overlay fail to start
+# them, with an error that does not mention line endings.
+* text=auto eol=lf

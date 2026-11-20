@@ -1,0 +1,60 @@
+name: Build and publish app image
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  version:
+    name: Read app version from config.yaml
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        # The Supervisor pulls `<image>:<version>`, so the image tag must
+        # equal the app version in rex-server/config.yaml.
+        run: |
+          version=$(sed -n 's/^version: *"\([^"]*\)".*/\1/p' rex-server/config.yaml)
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build and push multi-arch image
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Builds rex-server/ for linux/amd64 and linux/arm64 and pushes them as
+      # one multi-arch manifest: ghcr.io/aranw/ha-rex-server:<version>.
+      # config.yaml's `image` points at that name (no {arch} placeholder);
+      # the Supervisor resolves the host architecture from the manifest list.
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: rex-server
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/aranw/ha-rex-server:${{ needs.version.outputs.version }}
+            ghcr.io/aranw/ha-rex-server:latest
