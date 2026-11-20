@@ -58,3 +58,17 @@ jobs:
           tags: |
             ghcr.io/aranw/ha-rex-server:${{ needs.version.outputs.version }}
             ghcr.io/aranw/ha-rex-server:latest
+
+      # The Supervisor pulls app images anonymously, so the ghcr package
+      # must be public (packages are private by default).
+      - name: Make the ghcr package public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -fsS -X PATCH \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/users/${{ github.actor }}/packages/container/ha-rex-server" \
+            -d '{"visibility":"public"}' \
+            | grep -o '"visibility": *"[a-z]*"'
