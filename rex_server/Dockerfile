@@ -1,3 +1,9 @@
+# Base image. Overridable at build time:
+#   docker build --build-arg BUILD_FROM=ghcr.io/hassio-addons/base:19 .
+# or via the `base_image` input of the build workflow. The base must be a
+# multi-arch manifest (linux/amd64 + linux/arm64), Alpine-based, with
+# s6-overlay v3 (entrypoint /init, init: false in config.yaml) and bashio
+# (`#!/command/with-contenv bashio`) - the rex-install service uses apk.
 ARG BUILD_FROM=ghcr.io/home-assistant/base:3.24
 FROM ${BUILD_FROM}
 

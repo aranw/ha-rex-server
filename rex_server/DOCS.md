@@ -71,3 +71,18 @@ share or Terminal & SSH app); it appears under **Local apps**. Bump `version`
 in `config.yaml` to make the Supervisor rebuild. Release images are built
 and pushed as one multi-arch manifest, `ghcr.io/aranw/ha-rex-server:<version>`,
 by `.github/workflows/build.yaml` with Docker Buildx.
+
+### Custom base image
+
+The base image is a build-time property (runtime options cannot change it).
+It is parameterised as `ARG BUILD_FROM` in the Dockerfile:
+
+- Building from source: edit the `ARG BUILD_FROM=...` line, or
+  `docker build --build-arg BUILD_FROM=ghcr.io/hassio-addons/base:19 rex_server/`.
+- Release builds: run the **Build and publish app image** workflow manually
+  (Actions > Run workflow) and set the `base_image` input.
+
+The base must be a multi-arch manifest covering linux/amd64 and linux/arm64,
+Alpine-based, with s6-overlay v3 and bashio - `rex-install` installs Rex with
+`apk`. On a non-Alpine base, switch the install to Rex's `install.sh --tarball`
+instead.

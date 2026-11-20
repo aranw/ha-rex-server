@@ -5,10 +5,19 @@ on:
     branches: [main]
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      base_image:
+        description: "Base image to build FROM (build arg BUILD_FROM). Must be a multi-arch manifest covering linux/amd64 and linux/arm64, Alpine-based with s6-overlay v3 and bashio"
+        required: false
+        default: "ghcr.io/home-assistant/base:3.24"
 
 permissions:
   contents: read
   packages: write
+
+# Empty on push events, so the default applies there too.
+env:
+  BASE_IMAGE: ${{ inputs.base_image || 'ghcr.io/home-assistant/base:3.24' }}
 
 jobs:
   version:
@@ -53,6 +62,8 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: rex_server
+          build-args: |
+            BUILD_FROM=${{ env.BASE_IMAGE }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
