@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Fix container start: move `user-bundles.d` from `s6-rc.d/` to
+  `/etc/s6-overlay/user-bundles.d/` (its s6-overlay location). Inside
+  `s6-rc.d` s6-rc-compile expects a `type` file for it and the container
+  died with "unable to read .../s6-rc.d/user-bundles.d/type"
+
 ## 0.1.1
 
 - Fix `channel` option: list options are pipe-separated (`list(stable|preview|snapshot)`), so the Configuration tab now shows a real dropdown

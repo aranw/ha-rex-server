@@ -1,5 +1,5 @@
 name: "Rex Server"
-version: "0.1.1"
+version: "0.1.2"
 slug: "rex_server"
 description: "Runs a Rex terminal server (superlogical.com/rex) as a Home Assistant app, so Rex clients can open terminals on it"
 url: "https://github.com/aranw/ha-rex-server"
