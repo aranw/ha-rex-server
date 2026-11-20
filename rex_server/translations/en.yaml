@@ -6,14 +6,14 @@ configuration:
     name: Tailscale auth key
     description: One-time Tailscale auth key, used once to sign the server into your tailnet as the device "rex". Leave empty to disable the Tailscale listener.
   extra_listen:
-    name: Extra listen address
-    description: Additional network listener for the Rex server, for example ":7297". Leave empty to listen on the local Unix socket only. Requires "Allow anonymous access" and an enabled port below.
+    name: Extra network listener (advanced, optional)
+    description: An extra address the Rex server also listens on for remote clients, for example ":7297" (every interface, port 7297). Leave empty to keep the server on its local socket and the Tailscale listener only. If you set this, you must also enable "Allow anonymous access" below and turn on port 7297 in the Network section - and anyone who can reach that port gets full access to the server.
   allow_anonymous:
     name: Allow anonymous access
     description: Lets the extra listener accept connections without identifying the caller. Anyone who can reach it gets full access to the server. Only enable this on a network you fully control.
   max_sessions:
     name: Maximum sessions
-    description: Maximum number of concurrent Rex sessions on this server. 0 means no limit.
+    description: Maximum number of concurrent Rex terminal sessions on this server. Set 0 for no limit.
 network:
   "7297/tcp":
     name: Rex plain HTTP listener

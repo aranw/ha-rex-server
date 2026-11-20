@@ -60,15 +60,22 @@ jobs:
             ghcr.io/aranw/ha-rex-server:latest
 
       # The Supervisor pulls app images anonymously, so the ghcr package
-      # must be public (packages are private by default).
+      # must be public (packages are private by default). The workflow
+      # GITHUB_TOKEN gets a 404 on the visibility API for user-owned
+      # packages, so this only warns: flip it once in the UI, at
+      # repo > Packages > ha-rex-server > Package settings > Public.
       - name: Make the ghcr package public
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          curl -fsS -X PATCH \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/user/packages/container/ha-rex-server/visibility" \
-            -d '{"visibility":"public"}' \
-            | grep -o '"visibility": *"[a-z]*"'
+          if curl -fsS -X PATCH \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/user/packages/container/ha-rex-server/visibility" \
+              -d '{"visibility":"public"}'; then
+            echo "ghcr package visibility set to public"
+          else
+            echo "::warning::could not set ghcr package visibility via API (404 with GITHUB_TOKEN); set it to public once in the GitHub UI (repo > Packages > ha-rex-server > Package settings) - the Supervisor pulls images anonymously"
+          fi
