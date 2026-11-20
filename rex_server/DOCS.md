@@ -64,7 +64,7 @@ Rex identifies callers only by how they connect. Pick one:
 
 ## Development
 
-Copy `rex-server/` into `local_apps` on your Home Assistant (via the Samba
+Copy `rex_server/` into `local_apps` on your Home Assistant (via the Samba
 share or Terminal & SSH app); it appears under **Local apps**. Bump `version`
 in `config.yaml` to make the Supervisor rebuild. Release images are built
 and pushed as one multi-arch manifest, `ghcr.io/aranw/ha-rex-server:<version>`,
